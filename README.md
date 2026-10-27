@@ -1,153 +1,151 @@
-# 逻辑回归模型-客户流失预警系统 
+# Logistic Regression — Customer Churn Early-Warning System
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange.svg)](https://jupyter.org/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.0+-green.svg)](https://scikit-learn.org/)
 
-## 项目简介
+## Overview
 
-本项目基于**逻辑回归算法**构建了一个电信客户流失预警模型。通过对客户基本信息、服务使用情况、合同与账单信息等多维度数据进行分析，预测客户流失风险，帮助企业提前采取挽留措施，降低客户流失率。
+A churn prediction model for a telecom company, built with logistic regression. It uses customer demographics, service usage, contract, and billing data to estimate churn risk, so the business can intervene before customers leave.
 
-## 数据集说明
+## Dataset
 
-本项目使用电信客户流失数据集（Telco Customer Churn）`https://www.kaggle.com/datasets/blastchar/telco-customer-churn/data`，
-包含 **7,043 位客户**的 **21 个特征字段**：
+The project uses the Telco Customer Churn dataset (`https://www.kaggle.com/datasets/blastchar/telco-customer-churn/data`): **7,043 customers** and **21 fields**.
 
-### 特征分类
+### Feature Groups
 
-| 类别 | 字段 |
+| Group | Fields |
 |------|------|
-| **客户基本信息** | 客户ID、性别、老年公民、伴侣、家属 |
-| **服务使用情况** | 在网时长、电话服务、多条线路、互联网服务、在线安全、在线备份、设备保护、技术支持、流媒体电视、流媒体电影 |
-| **合同与账单** | 合同、无纸化账单、支付方式、月费、总费用 |
-| **目标变量** | 客户流失（Yes/No） |
+| **Customer profile** | customerID, gender, SeniorCitizen, Partner, Dependents |
+| **Service usage** | tenure, PhoneService, MultipleLines, InternetService, OnlineSecurity, OnlineBackup, DeviceProtection, TechSupport, StreamingTV, StreamingMovies |
+| **Contract and billing** | Contract, PaperlessBilling, PaymentMethod, MonthlyCharges, TotalCharges |
+| **Target** | Churn (Yes/No) |
 
-### 数据特点
+### Data Characteristics
 
-- **数据集规模**：7,043 条记录，21 个字段
-- **流失率**：约 26.5%（1,869 位客户已流失）
-- **数据质量**：存在少量缺失值（总费用列），已进行处理
+- 7,043 records, 21 fields
+- Churn rate: about 26.5% (1,869 customers)
+- A small number of missing values in `TotalCharges`; these were handled
 
-## 技术栈
+## Tech Stack
 
 - **Python 3.11+**
-- **pandas** - 数据处理与分析
-- **numpy** - 数值计算
-- **matplotlib / seaborn** - 数据可视化
-- **scikit-learn** - 机器学习建模
+- **pandas** — data processing
+- **numpy** — numerical computing
+- **matplotlib / seaborn** — visualization
+- **scikit-learn** — modeling
 
-## 项目结构
+## Project Structure
 
 ```
 .
-├── README.md                              # 项目说明文档
-├── customer_churn_prediction.ipynb        # Jupyter Notebook 主程序
-├── churn_prediction_model.pkl             # 模型信息
-├── WA_Fn-UseC_-Telco-Customer-Churn.csv   # 数据集
-└── scaler.pkl                             # 模型信息
+├── README.md                              # this file
+├── customer_churn_prediction.ipynb        # main notebook
+├── churn_prediction_model.pkl             # saved model
+├── WA_Fn-UseC_-Telco-Customer-Churn.csv   # dataset
+└── scaler.pkl                             # saved scaler
 ```
 
-## 核心功能
+## What It Does
 
-### 1. 数据预处理
+### 1. Data Preprocessing
 
-- **列名清理**：去除列名中的前后空格
-- **缺失值处理**：将总费用转换为数值类型，删除包含缺失值的记录
-- **标签编码**：将客户流失（Yes/No）转换为数值（1/0）
-- **One-Hot 编码**：对 15 个分类变量进行编码，生成 30 个特征
+- **Column names**: strip leading/trailing spaces
+- **Missing values**: convert `TotalCharges` to numeric and drop rows with missing values
+- **Label encoding**: map Churn Yes/No to 1/0
+- **One-hot encoding**: encode 15 categorical variables, producing 30 features
 
-### 2. 模型构建
+### 2. Model
 
-- **算法**：逻辑回归（Logistic Regression）
-- **类别平衡**：使用 `class_weight='balanced'` 处理类别不平衡问题
-- **数据划分**：训练集 80%（5,625条），测试集 20%（1,407条）
-- **特征标准化**：使用 StandardScaler 进行标准化
+- **Algorithm**: logistic regression
+- **Class balance**: `class_weight='balanced'`
+- **Split**: 80% train (5,625 rows), 20% test (1,407 rows)
+- **Scaling**: StandardScaler
 
-### 3. 模型评估
+### 3. Evaluation
 
-| 指标 | 数值 |
+| Metric | Value |
 |------|------|
-| **准确率 (Accuracy)** | 72.64% |
-| **精确率 (Precision)** | 49.09% |
-| **召回率 (Recall)** | 79.68% |
-| **F1 分数 (F1-Score)** | 60.75% |
-| **AUC-ROC** | **83.50%** |
+| Accuracy | 72.64% |
+| Precision | 49.09% |
+| Recall | 79.68% |
+| F1 score | 60.75% |
+| AUC-ROC | **83.50%** |
 
-### 4. 风险等级划分
+### 4. Risk Tiers
 
-根据预测概率将客户分为三个风险等级：
+Customers are grouped by predicted churn probability:
 
-| 风险等级 | 流失概率 | 建议措施 |
+| Tier | Probability | Suggested action |
 |----------|----------|----------|
-| **高风险** | ≥ 70% | 立即采取挽留措施，提供专属优惠 |
-| **中风险** | 40% - 70% | 定期跟进，提升服务满意度 |
-| **低风险** | < 40% | 维持正常服务，定期关怀 |
+| **High** | ≥ 70% | Act immediately; offer targeted retention deals |
+| **Medium** | 40%–70% | Follow up regularly; improve satisfaction |
+| **Low** | < 40% | Normal service; occasional check-ins |
 
-### 5. 可视化分析
+### 5. Visualizations
 
-- 客户流失分布图
-- 混淆矩阵热力图
-- ROC 曲线
-- Top 15 重要特征分析
-- 风险等级分布图
+- Churn distribution
+- Confusion matrix heatmap
+- ROC curve
+- Top 15 feature importances
+- Risk tier distribution
 
-## 使用方法
+## Usage
 
 ```bash
 jupyter notebook customer_churn_prediction.ipynb
 ```
 
-按顺序运行各个代码单元格，可以交互式地查看数据分析过程和结果。
+Run the cells in order to walk through the analysis and results interactively.
 
-## 关键发现
+## Key Findings
 
-1. **高召回率**：模型能够识别出 79.68% 的潜在流失客户，适合用于预警场景
-2. **AUC-ROC 达 83.50%**：模型具有良好的区分能力
-3. **关键影响因素**：
-   - 合同类型（月付客户更容易流失）
-   - 在网时长（新用户流失风险更高）
-   - 互联网服务类型（光纤用户流失率较高）
-   - 支付方式（电子支票用户风险较高）
+1. **High recall** — the model catches 79.68% of potential churners, which suits an early-warning use case.
+2. **AUC-ROC of 83.50%** — good separation between churners and non-churners.
+3. **Main drivers**:
+   - Contract type (month-to-month customers churn more)
+   - Tenure (new customers are at higher risk)
+   - Internet service type (fiber users churn more)
+   - Payment method (electronic check users are at higher risk)
 
-## 业务建议
+## Business Recommendations
 
-1. **重点关注高风险客户**：针对预测为高风险的客户，主动提供挽留方案
-2. **优化合同策略**：鼓励客户选择长期合同，降低月付比例
-3. **提升新用户体验**：加强入网前3个月的服务跟进
-4. **增值服务推广**：推广在线安全、技术支持等附加服务，提高客户粘性
+1. **Focus on high-risk customers** — reach out proactively with retention offers.
+2. **Rework contract incentives** — encourage longer contracts and reduce month-to-month share.
+3. **Improve onboarding** — strengthen support during the first three months.
+4. **Promote add-ons** — push online security and tech support to increase stickiness.
 
-## 模型保存与加载
+## Saving and Loading the Model
 
 ```python
 import joblib
 
-# 保存模型
+# Save
 joblib.dump(model, 'churn_prediction_model.pkl')
 joblib.dump(scaler, 'scaler.pkl')
 
-# 加载模型
+# Load
 loaded_model = joblib.load('churn_prediction_model.pkl')
 loaded_scaler = joblib.load('scaler.pkl')
 ```
 
-## 贡献与反馈
+## Contributing
 
-欢迎提交 Issue 和 Pull Request 来改进本项目。
+Issues and pull requests are welcome.
 
-## 许可证
+## License
 
-本项目采用 MIT 许可证。
-
----
-
-## 联系方式
-
-**谙弆悕博士（Ailan Anjuxi）**
-
-- 邮箱：anjuxi.ME@outlook.com
-- SIP电话：sip:anjuxi@sip.linphone.org
+MIT
 
 ---
 
-*本项目为数据科学与机器学习教学演示用途，数据集来源于公开数据源。*
+## Contact
 
+**Dr. Ailan Anjuxi (谙弆悕)**
+
+- Email: anjuxi.ME@outlook.com
+- SIP: sip:anjuxi@sip.linphone.org
+
+---
+
+*A teaching demo for data science and machine learning. The dataset comes from a public source.*
